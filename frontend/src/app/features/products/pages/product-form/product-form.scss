@@ -1,0 +1,81 @@
+
+:host { display: block; color: #17233d; }
+.form-page { max-width: 850px; margin: auto; padding: 34px; }
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 25px;
+  color: #5270cc;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.eyebrow { color: #5273db; font-size: 11px; font-weight: 800; letter-spacing: 1.6px; }
+.page-header { margin-bottom: 25px; }
+.page-header h1 { margin: 8px 0; font-size: 32px; letter-spacing: -1px; }
+.page-header p, .hint { color: #8290a8; font-size: 13px; line-height: 1.7; }
+
+.form-card {
+  margin-bottom: 20px;
+  padding: 26px;
+  border: 1px solid #e8edf5;
+  border-radius: 15px;
+  background: #fff;
+}
+.form-card h2 { margin: 0 0 23px; font-size: 18px; }
+
+.field { display: flex; flex-direction: column; gap: 9px; margin-bottom: 22px; }
+.field:last-child { margin-bottom: 0; }
+label { color: #34415b; font-size: 13px; font-weight: 700; }
+
+input, textarea, select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px;
+  border: 1px solid #dfe5ef;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: #17233d;
+  font: inherit;
+  font-size: 13px;
+}
+textarea { resize: vertical; }
+input:focus, textarea:focus, select:focus {
+  border-color: #6581ed;
+  box-shadow: 0 0 0 3px rgb(70 100 220 / 10%);
+}
+
+.hint { font-size: 11px; }
+.field-error { color: #c33d4b; font-size: 12px; }
+.two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+.cancel-button, .submit-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  border: 1px solid #dfe5ef;
+  border-radius: 9px;
+  background: #fff;
+  color: #52617a;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.submit-button { border-color: #3659d9; background: #3659d9; color: #fff; }
+.submit-button:disabled { cursor: not-allowed; opacity: .6; }
+.alert { margin-bottom: 20px; padding: 14px; border-radius: 9px; background: #fff0f0; color: #b42332; font-size: 13px; }
+.state-card { padding: 40px; border: 1px dashed #d8dfed; border-radius: 14px; background: #fff; color: #8290a8; text-align: center; }
+
+@media (max-width: 600px) {
+  .form-page { padding: 22px 15px; }
+  .form-card { padding: 20px; }
+  .two-columns { grid-template-columns: 1fr; gap: 0; }
+  .form-actions > * { flex: 1; }
+}

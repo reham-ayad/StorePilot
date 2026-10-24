@@ -1,0 +1,158 @@
+
+<section class="stores-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">WORKSPACE</span>
+      <h1>My Stores</h1>
+      <p>Manage your stores and keep your business organized.</p>
+    </div>
+
+    <a class="primary-button" routerLink="/dashboard/stores/new">
+      <span class="plus-icon">+</span>
+      Create Store
+    </a>
+  </header>
+
+  <div class="stats-row">
+    <article class="stat-card">
+      <span class="stat-label">Total Active Stores</span>
+      <strong>{{ total }}</strong>
+      <span class="stat-caption">Your active workspace stores</span>
+    </article>
+
+    <article class="stat-card">
+      <span class="stat-label">Current Page</span>
+      <strong>{{ totalPages ? page : 0 }}<small> / {{ totalPages }}</small></strong>
+      <span class="stat-caption">Browse your stores</span>
+    </article>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert success-alert" role="status">
+      {{ successMessage }}
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="alert error-alert" role="alert">
+      {{ errorMessage }}
+      <button class="retry-button" type="button" (click)="loadStores()">
+        Try again
+      </button>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="state-card">
+      <span class="loader"></span>
+      <p>Loading your stores...</p>
+    </div>
+  } @else if (stores.length === 0 && !errorMessage) {
+    <div class="empty-state">
+      <div class="empty-icon">S</div>
+      <h2>Your workspace starts here</h2>
+      <p>Create your first store to start managing your business.</p>
+      <a class="primary-button" routerLink="/dashboard/stores/new">
+        Create your first store
+      </a>
+    </div>
+  } @else {
+    <div class="section-heading">
+      <div>
+        <h2>Your workspace</h2>
+        <p>{{ total }} {{ total === 1 ? 'store' : 'stores' }} found</p>
+      </div>
+    </div>
+
+    <div class="stores-grid">
+      @for (store of stores; track trackByStoreId($index, store)) {
+        <article class="store-card">
+          <div class="store-card-top">
+            <div class="store-logo">
+              @if (store.logoUrl) {
+                <img
+                  [src]="store.logoUrl"
+                  [alt]="store.name + ' logo'"
+                  (error)="store.logoUrl = null"
+                />
+              } @else {
+                <span>{{ store.name.charAt(0).toUpperCase() }}</span>
+              }
+            </div>
+
+            <span
+              class="status"
+              [class.status-active]="store.status === 'active'"
+              [class.status-paused]="store.status === 'paused'"
+            >
+              <span class="status-dot"></span>
+              {{ store.status }}
+            </span>
+          </div>
+
+          <h3>{{ store.name }}</h3>
+          <p class="store-description">
+            {{ store.description || 'No description added yet.' }}
+          </p>
+
+          <div class="store-meta">
+            <span>
+              <span class="meta-label">Currency</span>
+              <strong>{{ store.currency }}</strong>
+            </span>
+            <span>
+              <span class="meta-label">Created</span>
+              <strong>{{ store.createdAt | date: 'mediumDate' }}</strong>
+            </span>
+          </div>
+
+          <div class="card-actions">
+            <a
+              class="edit-button"
+              [routerLink]="['/dashboard/stores', store._id, 'edit']"
+            >
+              Edit store
+            </a>
+
+            <button
+              class="archive-button"
+              type="button"
+              [disabled]="archivingId !== null"
+              (click)="archiveStore(store)"
+            >
+              {{ archivingId === store._id ? 'Archiving...' : 'Archive' }}
+            </button>
+            <a
+  class="edit-button"
+  [routerLink]="['/dashboard/stores', store._id, 'products']"
+>
+  Products
+</a>
+          </div>
+        </article>
+      }
+    </div>
+
+    @if (totalPages > 1) {
+      <nav class="pagination" aria-label="Store pagination">
+        <button
+          type="button"
+          [disabled]="page === 1 || loading"
+          (click)="goToPage(page - 1)"
+        >
+          Previous
+        </button>
+
+        <span>Page <strong>{{ page }}</strong> of {{ totalPages }}</span>
+
+        <button
+          type="button"
+          [disabled]="page === totalPages || loading"
+          (click)="goToPage(page + 1)"
+        >
+          Next
+        </button>
+      </nav>
+    }
+  }
+</section>

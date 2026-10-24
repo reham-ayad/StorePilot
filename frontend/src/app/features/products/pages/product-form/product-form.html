@@ -1,0 +1,137 @@
+
+<section class="form-page">
+  <a class="back-link" [routerLink]="['/dashboard/stores', storeId, 'products']">
+    ← Back to Products
+  </a>
+
+  <header class="page-header">
+    <span class="eyebrow">PRODUCT MANAGEMENT</span>
+    <h1>{{ isEditing ? 'Edit Product' : 'Add Product' }}</h1>
+    <p>Manage product details, pricing, inventory, and images.</p>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert" role="alert">{{ errorMessage }}</div>
+  }
+
+  @if (loading) {
+    <div class="state-card">Loading product details...</div>
+  } @else {
+    <form [formGroup]="productForm" (ngSubmit)="submit()">
+      <section class="form-card">
+        <h2>Product information</h2>
+
+        <div class="field">
+          <label for="name">Product name *</label>
+          <input
+            id="name"
+            formControlName="name"
+            placeholder="e.g. Classic Cotton T-Shirt"
+            maxlength="150"
+          />
+          @if (productForm.controls.name.touched && productForm.controls.name.invalid) {
+            <small class="field-error">Name is required and must be at least 2 characters.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="sku">SKU *</label>
+          <input
+            id="sku"
+            formControlName="sku"
+            placeholder="e.g. TSHIRT-BLK-001"
+            maxlength="64"
+          />
+          <small class="hint">Use letters, numbers, hyphens, or underscores.</small>
+          @if (productForm.controls.sku.touched && productForm.controls.sku.invalid) {
+            <small class="field-error">Enter a valid SKU.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="4"
+            maxlength="5000"
+            placeholder="Describe your product..."
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label for="imagesText">Image URLs</label>
+          <textarea
+            id="imagesText"
+            formControlName="imagesText"
+            rows="3"
+            placeholder="https://example.com/product-image.jpg"
+          ></textarea>
+          <small class="hint">One HTTP(S) URL per line, up to 10 images.</small>
+        </div>
+      </section>
+
+      <section class="form-card">
+        <h2>Pricing and inventory</h2>
+
+        <div class="two-columns">
+          <div class="field">
+            <label for="price">Price *</label>
+            <input id="price" type="number" min="0" step="0.01" formControlName="price" />
+            @if (productForm.controls.price.touched && productForm.controls.price.invalid) {
+              <small class="field-error">Enter a valid non-negative price.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="compareAtPrice">Compare-at price</label>
+            <input
+              id="compareAtPrice"
+              type="number"
+              min="0"
+              step="0.01"
+              formControlName="compareAtPrice"
+              placeholder="Optional"
+            />
+            <small class="hint">Must be equal to or greater than the regular price.</small>
+          </div>
+        </div>
+
+        <div class="two-columns">
+          <div class="field">
+            <label for="stock">Stock quantity *</label>
+            <input id="stock" type="number" min="0" step="1" formControlName="stock" />
+          </div>
+
+          <div class="field">
+            <label for="status">Status</label>
+            <select id="status" formControlName="status">
+              <option value="draft">Draft</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <a
+          class="cancel-button"
+          [routerLink]="['/dashboard/stores', storeId, 'products']"
+        >
+          Cancel
+        </a>
+
+        <button class="submit-button" type="submit" [disabled]="saving">
+          {{
+            saving
+              ? 'Saving...'
+              : isEditing
+                ? 'Save Changes'
+                : 'Create Product'
+          }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

@@ -1,0 +1,106 @@
+
+<main class="auth-page">
+  <section class="auth-card">
+    <a class="brand" routerLink="/login">
+      <span class="brand-icon">S</span>
+      <span>StorePilot</span>
+    </a>
+
+    <div class="auth-heading">
+      <p class="eyebrow">GET STARTED</p>
+      <h1>Create your account</h1>
+      <p class="subtitle">
+        Start managing your business from one organized workspace.
+      </p>
+    </div>
+
+    @if (errorMessage) {
+      <div class="alert-error" role="alert">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <form [formGroup]="registerForm" (ngSubmit)="submit()">
+      <div class="form-field">
+        <label for="name">Full name</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          placeholder="Your full name"
+          autocomplete="name"
+        />
+
+        @if (registerForm.controls.name.touched &&
+        registerForm.controls.name.invalid) {
+          <small class="field-error">
+            Name must contain at least 2 characters.
+          </small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="email">Email address</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+        />
+
+        @if (registerForm.controls.email.touched &&
+        registerForm.controls.email.invalid) {
+          <small class="field-error">Enter a valid email address.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="At least 8 characters"
+          autocomplete="new-password"
+        />
+
+        @if (registerForm.controls.password.touched &&
+        registerForm.controls.password.invalid) {
+          <small class="field-error">
+            Password must contain at least 8 characters.
+          </small>
+        }
+      </div>
+
+      <button class="submit-button" type="submit" [disabled]="loading">
+        {{ loading ? 'Creating account...' : 'Create account' }}
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Already have an account?
+      <a routerLink="/login">Sign in</a>
+    </p>
+  </section>
+
+  <aside class="auth-aside">
+    <div class="aside-content">
+      <span class="aside-label">MEET YOUR NEW WORKSPACE</span>
+      <h2>Spend less time managing. More time growing.</h2>
+      <p>
+        Bring your store operations together and keep your business
+        moving forward with StorePilot.
+      </p>
+
+      <div class="feature-line">
+        <span class="feature-check">✓</span>
+        Organized store management
+      </div>
+      <div class="feature-line">
+        <span class="feature-check">✓</span>
+        Products and orders in one place
+      </div>
+    </div>
+  </aside>
+</main>

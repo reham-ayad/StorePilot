@@ -1,0 +1,85 @@
+
+<main class="auth-page">
+  <section class="auth-card">
+    <a class="brand" routerLink="/login">
+      <span class="brand-icon">S</span>
+      <span>StorePilot</span>
+    </a>
+
+    <div class="auth-heading">
+      <p class="eyebrow">WELCOME BACK</p>
+      <h1>Sign in to your account</h1>
+      <p class="subtitle">
+        Manage your stores, products, and orders in one place.
+      </p>
+    </div>
+
+    @if (errorMessage) {
+      <div class="alert-error" role="alert">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="submit()">
+      <div class="form-field">
+        <label for="email">Email address</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+        />
+
+        @if (loginForm.controls.email.touched &&
+        loginForm.controls.email.invalid) {
+          <small class="field-error">Enter a valid email address.</small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+        />
+
+        @if (loginForm.controls.password.touched &&
+        loginForm.controls.password.invalid) {
+          <small class="field-error">Password is required.</small>
+        }
+      </div>
+
+      <button class="submit-button" type="submit" [disabled]="loading">
+        {{ loading ? 'Signing in...' : 'Sign in' }}
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Don't have an account?
+      <a routerLink="/register">Create account</a>
+    </p>
+  </section>
+
+  <aside class="auth-aside">
+    <div class="aside-content">
+      <span class="aside-label">YOUR BUSINESS, SIMPLIFIED</span>
+      <h2>Everything your store needs. All in one place.</h2>
+      <p>
+        Keep your products, orders, and store operations organized
+        with StorePilot.
+      </p>
+      <div class="feature-line">
+        <span class="feature-check">✓</span>
+        One workspace for your business
+      </div>
+      <div class="feature-line">
+        <span class="feature-check">✓</span>
+        Clear insights into your operations
+      </div>
+    </div>
+  </aside>
+</main>
