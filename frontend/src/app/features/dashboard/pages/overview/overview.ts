@@ -1,218 +1,148 @@
-
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+
+interface DashboardStat {
+  title: string;
+  value: string;
+  caption: string;
+  period: string;
+  icon: string;
+  iconClass: string;
+}
+
+interface ChartBar {
+  day: string;
+  value: string;
+  height: number;
+}
+
+interface ActivityItem {
+  title: string;
+  description: string;
+  time: string;
+  icon: string;
+  iconClass: string;
+}
+
+interface SetupStep {
+  title: string;
+  description: string;
+  status: string;
+}
 
 @Component({
   selector: 'app-overview',
   standalone: true,
   imports: [RouterLink],
-  template: `
-    <main class="dashboard">
-      <header class="topbar">
-        <a class="brand" routerLink="/dashboard">
-          <span class="brand-icon">S</span>
-          StorePilot
-        </a>
-
-        <button
-          class="logout-button"
-          type="button"
-          [disabled]="loggingOut"
-          (click)="logout()"
-        >
-          {{ loggingOut ? 'Signing out...' : 'Sign out' }}
-        </button>
-      </header>
-
-      <section class="welcome">
-        <p class="eyebrow">YOUR WORKSPACE</p>
-        <h1>Welcome{{ user ? ', ' + user.name : '' }}!</h1>
-        <p class="description">
-          Your StorePilot account is connected successfully.
-        </p>
-
-        @if (user) {
-          <div class="user-card">
-            <div class="avatar">
-              {{ user.name.charAt(0).toUpperCase() }}
-            </div>
-
-            <div>
-              <h2>{{ user.name }}</h2>
-              <p>{{ user.email }}</p>
-              <span class="role">{{ user.role }}</span>
-            </div>
-          </div>
-        }
-
-        @if (errorMessage) {
-          <p class="error-message" role="alert">
-            {{ errorMessage }}
-          </p>
-        }
-
-        <p class="next-step">
-          Next up: store management, products, orders, and analytics.
-        </p>
-      </section>
-    </main>
-  `,
-  styles: [`
-    :host {
-      display: block;
-      min-height: 100vh;
-      background: #f6f8fc;
-      color: #172033;
-      font-family: Inter, Arial, sans-serif;
-    }
-
-    .topbar {
-      height: 76px;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 6%;
-      background: white;
-      border-bottom: 1px solid #e8ecf3;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #172033;
-      font-size: 21px;
-      font-weight: 800;
-      text-decoration: none;
-    }
-
-    .brand-icon {
-      display: grid;
-      place-items: center;
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: #3157d5;
-      color: white;
-      font-size: 21px;
-    }
-
-    .logout-button {
-      padding: 10px 16px;
-      border: 1px solid #dce1eb;
-      border-radius: 8px;
-      background: white;
-      color: #34405a;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .logout-button:disabled {
-      opacity: 0.6;
-      cursor: wait;
-    }
-
-    .welcome {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 64px 24px;
-    }
-
-    .eyebrow {
-      color: #3157d5;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-    }
-
-    h1 {
-      margin: 14px 0 8px;
-      font-size: clamp(28px, 4vw, 38px);
-      letter-spacing: -1px;
-    }
-
-    .description {
-      color: #758096;
-      line-height: 1.7;
-    }
-
-    .user-card {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      max-width: 440px;
-      margin-top: 32px;
-      padding: 24px;
-      border: 1px solid #e8ecf3;
-      border-radius: 14px;
-      background: white;
-      box-shadow: 0 6px 24px #1b2b4b08;
-    }
-
-    .avatar {
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: #e9edff;
-      color: #3157d5;
-      font-size: 22px;
-      font-weight: 800;
-    }
-
-    .user-card h2 {
-      margin: 0 0 6px;
-      font-size: 17px;
-    }
-
-    .user-card p {
-      margin: 0 0 10px;
-      color: #758096;
-      font-size: 13px;
-    }
-
-    .role {
-      display: inline-block;
-      padding: 4px 9px;
-      border-radius: 20px;
-      background: #edf2ff;
-      color: #3157d5;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: capitalize;
-    }
-
-    .next-step {
-      margin-top: 32px;
-      color: #758096;
-      font-size: 13px;
-    }
-
-    .error-message {
-      color: #b42318;
-      font-size: 13px;
-    }
-  `],
+  templateUrl: './overview.html',
+  styleUrl: './overview.scss',
 })
 export class Overview {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   loggingOut = false;
   errorMessage = '';
+
+  // Demo data only — replace with API data when the backend endpoints are ready.
+  readonly stats: DashboardStat[] = [
+    {
+      title: 'Total revenue',
+      value: 'EGP 24.8K',
+      caption: 'Sample revenue',
+      period: 'Preview',
+      icon: '↗',
+      iconClass: 'purple-icon',
+    },
+    {
+      title: 'Total orders',
+      value: '128',
+      caption: 'Example order count',
+      period: 'Preview',
+      icon: '▤',
+      iconClass: 'blue-icon',
+    },
+    {
+      title: 'Products',
+      value: '64',
+      caption: 'Example catalog size',
+      period: 'Preview',
+      icon: '◇',
+      iconClass: 'orange-icon',
+    },
+    {
+      title: 'Active stores',
+      value: '3',
+      caption: 'Example store count',
+      period: 'Preview',
+      icon: '⌂',
+      iconClass: 'green-icon',
+    },
+  ];
+
+  readonly chartBars: ChartBar[] = [
+    { day: 'Mon', value: '2.1k', height: 38 },
+    { day: 'Tue', value: '3.4k', height: 58 },
+    { day: 'Wed', value: '2.8k', height: 47 },
+    { day: 'Thu', value: '4.2k', height: 72 },
+    { day: 'Fri', value: '3.1k', height: 53 },
+    { day: 'Sat', value: '5.0k', height: 88 },
+    { day: 'Sun', value: '4.2k', height: 72 },
+  ];
+
+  readonly activities: ActivityItem[] = [
+    {
+      title: 'Workspace created',
+      description: 'Your StorePilot workspace is ready.',
+      time: 'Getting started',
+      icon: '✓',
+      iconClass: 'activity-green',
+    },
+    {
+      title: 'Product catalog',
+      description: 'Add products to prepare your catalog.',
+      time: 'Next step',
+      icon: '◇',
+      iconClass: 'activity-purple',
+    },
+    {
+      title: 'Order management',
+      description: 'Your orders will appear here.',
+      time: 'Coming next',
+      icon: '▤',
+      iconClass: 'activity-blue',
+    },
+  ];
+
+  readonly setupSteps: SetupStep[] = [
+    {
+      title: 'Create a store',
+      description: 'Set up your business space',
+      status: 'To do',
+    },
+    {
+      title: 'Add products',
+      description: 'Build your product catalog',
+      status: 'To do',
+    },
+    {
+      title: 'Manage orders',
+      description: 'Track incoming purchases',
+      status: 'Upcoming',
+    },
+  ];
 
   get user() {
     return this.authService.user;
   }
 
   logout(): void {
-    if (this.loggingOut) return;
+    if (this.loggingOut) {
+      return;
+    }
 
     this.loggingOut = true;
     this.errorMessage = '';
@@ -220,13 +150,17 @@ export class Overview {
     this.authService.logout().subscribe({
       next: () => {
         this.loggingOut = false;
-        void this.router.navigate(['/login']);
+        this.cdr.markForCheck();
+        void this.router.navigate(['/']);
       },
       error: (error: HttpErrorResponse) => {
         this.loggingOut = false;
         this.errorMessage =
           error.error?.error?.message ??
+          error.error?.message ??
           'Could not sign out. Please try again.';
+
+        this.cdr.markForCheck();
       },
     });
   }

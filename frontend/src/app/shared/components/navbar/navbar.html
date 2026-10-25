@@ -1,0 +1,58 @@
+
+<header class="navbar">
+  <a class="brand" routerLink="/" aria-label="StorePilot home">
+    <span class="brand-icon">▤</span>
+    <span class="brand-name">StorePilot</span>
+  </a>
+
+  <nav class="preview-nav" [class.menu-open]="menuOpen">
+    <span class="preview-label">PREVIEW</span>
+
+    <a
+      routerLink="/"
+      routerLinkActive="selected"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="menuOpen = false"
+    >
+      Public website
+    </a>
+
+    <button type="button" (click)="openStoreDashboard()">
+      Store dashboard
+    </button>
+
+        <button type="button" (click)="openSuperAdmin()">
+      Super admin
+    </button>
+  </nav>
+
+  <div class="nav-actions">
+    @if (user) {
+      <span class="welcome">
+        Hi, {{ user.name }}
+      </span>
+    } @else {
+<button type="button" class="sign-in" (click)="requestLogin.emit()">
+  Sign in
+</button>
+      <button
+  type="button"
+  class="start-button"
+  (click)="requestRegister.emit()"
+>
+  Start for free
+  <span aria-hidden="true">→</span>
+</button>
+    }
+  </div>
+
+  <button
+    type="button"
+    class="menu-toggle"
+    (click)="toggleMenu()"
+    [attr.aria-expanded]="menuOpen"
+    aria-label="Toggle navigation"
+  >
+    ☰
+  </button>
+</header>

@@ -1,6 +1,6 @@
 
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -8,13 +8,11 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
-  Store,
   StoreCurrency,
   StoreInput,
   StoreStatus,
   StoresService,
 } from '../../../../core/services/stores.service';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-store-form',
@@ -23,12 +21,15 @@ import { ChangeDetectorRef } from '@angular/core';
   template: `
     <section class="form-page">
       <a class="back-link" routerLink="/dashboard/stores">
-        ← Back to My Stores
+        <span aria-hidden="true">←</span>
+        Back to My Stores
       </a>
 
       <header class="page-header">
         <span class="eyebrow">STORE MANAGEMENT</span>
+
         <h1>{{ isEditing ? 'Edit Store' : 'Create a Store' }}</h1>
+
         <p>
           {{
             isEditing
@@ -39,40 +40,69 @@ import { ChangeDetectorRef } from '@angular/core';
       </header>
 
       @if (errorMessage) {
-        <div class="alert" role="alert">{{ errorMessage }}</div>
+        <div class="alert" role="alert">
+          <span>{{ errorMessage }}</span>
+          <button
+            type="button"
+            class="alert-dismiss"
+            aria-label="Dismiss error"
+            (click)="errorMessage = ''"
+          >
+            ×
+          </button>
+        </div>
       }
 
       @if (loadingStore) {
-        <div class="loading">Loading store details...</div>
+        <div class="loading-card" role="status">
+          <span class="loader"></span>
+          <p>Loading store details...</p>
+        </div>
       } @else {
         <form [formGroup]="storeForm" (ngSubmit)="submit()">
           <section class="form-card">
-            <h2>Basic information</h2>
-            <p class="section-description">
-              Tell us about your store.
-            </p>
+            <div class="section-heading">
+              <div class="section-icon" aria-hidden="true">▤</div>
+              <div>
+                <h2>Basic information</h2>
+                <p class="section-description">
+                  Tell us about your store.
+                </p>
+              </div>
+            </div>
 
             <div class="field">
-              <label for="name">Store name <span>*</span></label>
+              <label for="name">
+                Store name <span class="required">*</span>
+              </label>
+
               <input
                 id="name"
                 type="text"
                 formControlName="name"
                 placeholder="e.g. My Online Shop"
                 maxlength="100"
+                autocomplete="organization"
+                [class.invalid]="
+                  storeForm.controls.name.touched &&
+                  storeForm.controls.name.invalid
+                "
               />
+
               @if (
                 storeForm.controls.name.touched &&
                 storeForm.controls.name.invalid
               ) {
                 <small class="field-error">
-                  Store name is required and must be at least 2 characters.
+                  Store name is required and must be between 2 and 100
+                  characters.
                 </small>
               }
             </div>
 
             <div class="field">
               <label for="description">Description</label>
+
               <textarea
                 id="description"
                 formControlName="description"
@@ -80,37 +110,56 @@ import { ChangeDetectorRef } from '@angular/core';
                 rows="4"
                 maxlength="1000"
               ></textarea>
-              <small class="hint">Maximum 1000 characters.</small>
+
+              <small class="hint">
+                Maximum 1000 characters.
+              </small>
             </div>
 
             <div class="field">
               <label for="logoUrl">Logo URL</label>
+
               <input
                 id="logoUrl"
                 type="url"
                 formControlName="logoUrl"
                 placeholder="https://example.com/logo.png"
+                [class.invalid]="
+                  storeForm.controls.logoUrl.touched &&
+                  storeForm.controls.logoUrl.invalid
+                "
               />
+
               @if (
                 storeForm.controls.logoUrl.touched &&
                 storeForm.controls.logoUrl.invalid
               ) {
                 <small class="field-error">
-                  Enter a valid URL or leave this field empty.
+                  Enter a valid HTTP or HTTPS URL, or leave this field empty.
+                </small>
+              } @else {
+                <small class="hint">
+                  Optional. Use a publicly accessible image URL.
                 </small>
               }
             </div>
           </section>
 
           <section class="form-card">
-            <h2>Regional preferences</h2>
-            <p class="section-description">
-              Choose the default currency and timezone for your store.
-            </p>
+            <div class="section-heading">
+              <div class="section-icon" aria-hidden="true">◎</div>
+              <div>
+                <h2>Regional preferences</h2>
+                <p class="section-description">
+                  Choose the default currency and timezone for your store.
+                </p>
+              </div>
+            </div>
 
             <div class="two-columns">
               <div class="field">
                 <label for="currency">Currency</label>
+
                 <select id="currency" formControlName="currency">
                   <option value="EGP">EGP — Egyptian Pound</option>
                   <option value="USD">USD — US Dollar</option>
@@ -122,6 +171,7 @@ import { ChangeDetectorRef } from '@angular/core';
 
               <div class="field">
                 <label for="timezone">Timezone</label>
+
                 <select id="timezone" formControlName="timezone">
                   <option value="Africa/Cairo">Africa/Cairo</option>
                   <option value="Asia/Riyadh">Asia/Riyadh</option>
@@ -134,12 +184,17 @@ import { ChangeDetectorRef } from '@angular/core';
             </div>
 
             @if (isEditing) {
-              <div class="field">
+              <div class="field status-field">
                 <label for="status">Store status</label>
+
                 <select id="status" formControlName="status">
                   <option value="active">Active</option>
                   <option value="paused">Paused</option>
                 </select>
+
+                <small class="hint">
+                  Pausing a store may affect its availability to customers.
+                </small>
               </div>
             }
           </section>
@@ -154,13 +209,12 @@ import { ChangeDetectorRef } from '@angular/core';
               type="submit"
               [disabled]="saving"
             >
-              {{
-                saving
-                  ? 'Saving...'
-                  : isEditing
-                    ? 'Save Changes'
-                    : 'Create Store'
-              }}
+              @if (saving) {
+                <span class="button-loader"></span>
+                Saving...
+              } @else {
+                {{ isEditing ? 'Save Changes' : 'Create Store' }}
+              }
             </button>
           </div>
         </form>
@@ -168,109 +222,374 @@ import { ChangeDetectorRef } from '@angular/core';
     </section>
   `,
   styles: [`
-    :host { display: block; color: #17233d; }
+    :host {
+      display: block;
+      color: #3e2c22;
+      font-family: 'DM Sans', Arial, sans-serif;
+    }
 
-    .form-page { max-width: 850px; margin: 0 auto; padding: 36px; }
+    .form-page {
+      box-sizing: border-box;
+      max-width: 850px;
+      margin: 0 auto;
+      padding: 36px;
+    }
 
     .back-link {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       margin-bottom: 28px;
-      color: #5270cc;
+      color: #70513b;
       font-size: 13px;
       font-weight: 700;
       text-decoration: none;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #3e2c22;
+      }
+
+      &:focus-visible {
+        outline: 3px solid rgb(112 81 59 / 20%);
+        outline-offset: 4px;
+        border-radius: 3px;
+      }
+
+      span {
+        font-size: 18px;
+      }
+    }
+
+    .page-header {
+      margin-bottom: 28px;
+
+      h1 {
+        margin: 9px 0;
+        color: #3e2c22;
+        font-size: clamp(27px, 3vw, 32px);
+        font-weight: 800;
+        letter-spacing: -1px;
+      }
+
+      p {
+        margin: 0;
+        color: #806e60;
+        font-size: 14px;
+        line-height: 1.7;
+      }
     }
 
     .eyebrow {
-      color: #5273db;
+      color: #70513b;
       font-size: 11px;
       font-weight: 800;
       letter-spacing: 1.8px;
     }
 
-    .page-header { margin-bottom: 28px; }
-    .page-header h1 { margin: 9px 0; font-size: 32px; letter-spacing: -1px; }
-    .page-header p, .section-description { color: #8290a8; font-size: 14px; line-height: 1.7; }
-
     .form-card {
-      margin-bottom: 20px;
       padding: 26px;
-      border: 1px solid #e8edf5;
+      margin-bottom: 20px;
+      border: 1px solid #e9dfd3;
       border-radius: 16px;
-      background: #fff;
+      background: #fffdfa;
+      box-shadow: 0 4px 18px rgb(62 44 34 / 3%);
     }
 
-    .form-card h2 { margin: 0 0 7px; font-size: 18px; }
-    .section-description { margin: 0 0 25px; }
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 25px;
 
-    .field { display: flex; flex-direction: column; gap: 9px; margin-bottom: 22px; }
-    .field:last-child { margin-bottom: 0; }
-    label { color: #34415b; font-size: 13px; font-weight: 700; }
-    label span { color: #d44d5a; }
+      h2 {
+        margin: 0 0 6px;
+        color: #3e2c22;
+        font-size: 18px;
+        font-weight: 750;
+      }
+    }
 
-    input, textarea, select {
+    .section-icon {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      place-items: center;
+      border: 1px solid #e9dfd3;
+      border-radius: 12px;
+      background: #f0e6d6;
+      color: #70513b;
+      font-size: 21px;
+    }
+
+    .section-description {
+      margin: 0;
+      color: #806e60;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-bottom: 22px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    label {
+      color: #5d4737;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .required {
+      color: #b42332;
+    }
+
+    input,
+    textarea,
+    select {
       box-sizing: border-box;
       width: 100%;
       min-height: 46px;
       padding: 12px 13px;
-      border: 1px solid #dfe5ef;
+      border: 1px solid #e3d4c4;
       border-radius: 9px;
       outline: none;
-      background: #fff;
-      color: #17233d;
+      background: #fffdfa;
+      color: #3e2c22;
       font: inherit;
       font-size: 13px;
-      transition: border-color .2s, box-shadow .2s;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease,
+        background 0.2s ease;
+
+      &::placeholder {
+        color: #b0a092;
+      }
+
+      &:hover:not(:disabled) {
+        border-color: #cbb39c;
+      }
+
+      &:focus {
+        border-color: #70513b;
+        box-shadow: 0 0 0 3px rgb(112 81 59 / 12%);
+      }
+
+      &.invalid {
+        border-color: #c64a52;
+      }
+
+      &.invalid:focus {
+        box-shadow: 0 0 0 3px rgb(196 74 82 / 10%);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+      }
     }
 
-    textarea { resize: vertical; }
-    input:focus, textarea:focus, select:focus {
-      border-color: #6581ed;
-      box-shadow: 0 0 0 3px rgb(70 100 220 / 10%);
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.7;
     }
 
-    .hint { color: #8a96aa; font-size: 11px; }
-    .field-error { color: #c33d4b; font-size: 12px; }
-    .two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .hint {
+      color: #948274;
+      font-size: 11px;
+      line-height: 1.5;
+    }
 
-    .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin: 25px 0; }
-    .cancel-button, .submit-button {
+    .field-error {
+      color: #b42332;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .status-field {
+      margin-top: 4px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin: 25px 0;
+    }
+
+    .cancel-button,
+    .submit-button {
+      box-sizing: border-box;
       display: inline-flex;
       min-height: 44px;
       align-items: center;
       justify-content: center;
+      gap: 9px;
       padding: 0 20px;
-      border: 1px solid #e0e6f0;
+      border: 1px solid #e3d4c4;
       border-radius: 10px;
-      background: #fff;
-      color: #52617a;
+      background: #fffdfa;
+      color: #5d4737;
+      font: inherit;
       font-size: 13px;
       font-weight: 700;
       text-decoration: none;
       cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease,
+        color 0.2s ease, transform 0.2s ease;
+
+      &:focus-visible {
+        outline: 3px solid rgb(112 81 59 / 20%);
+        outline-offset: 3px;
+      }
     }
 
-    .submit-button { border-color: #3659d9; background: #3659d9; color: #fff; }
-    .submit-button:hover:not(:disabled) { background: #2848c0; }
-    .submit-button:disabled { cursor: not-allowed; opacity: .6; }
+    .cancel-button:hover {
+      border-color: #d9c5b0;
+      background: #f7f0e7;
+    }
+
+    .submit-button {
+      min-width: 145px;
+      border-color: #70513b;
+      background: #70513b;
+      color: #fffdfa;
+
+      &:hover:not(:disabled) {
+        border-color: #3e2c22;
+        background: #3e2c22;
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+      }
+    }
+
+    .button-loader {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgb(255 253 250 / 40%);
+      border-top-color: #fffdfa;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
 
     .alert {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
       margin-bottom: 20px;
-      padding: 14px;
-      border-radius: 9px;
-      background: #fff0f0;
-      color: #b42332;
+      padding: 14px 16px;
+      border: 1px solid #f3cbd0;
+      border-radius: 10px;
+      background: #fff0f1;
+      color: #a61b2b;
       font-size: 13px;
+      line-height: 1.6;
     }
 
-    .loading { padding: 35px; color: #8290a8; text-align: center; }
+    .alert-dismiss {
+      flex-shrink: 0;
+      padding: 0 4px;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .loading-card {
+      display: flex;
+      min-height: 220px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border: 1px solid #e9dfd3;
+      border-radius: 16px;
+      background: #fffdfa;
+
+      p {
+        margin: 0;
+        color: #806e60;
+        font-size: 13px;
+      }
+    }
+
+    .loader {
+      width: 30px;
+      height: 30px;
+      border: 3px solid #e9dfd3;
+      border-top-color: #70513b;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .form-page {
+        padding: 26px 20px;
+      }
+    }
 
     @media (max-width: 600px) {
-      .form-page { padding: 24px 16px; }
-      .form-card { padding: 20px; }
-      .two-columns { grid-template-columns: 1fr; gap: 0; }
-      .page-header h1 { font-size: 27px; }
-      .form-actions > * { flex: 1; }
+      .form-page {
+        padding: 22px 16px;
+      }
+
+      .form-card {
+        padding: 20px 16px;
+      }
+
+      .two-columns {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .form-actions {
+        flex-direction: column-reverse;
+      }
+
+      .form-actions > * {
+        width: 100%;
+      }
+
+      .submit-button {
+        min-height: 46px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   `],
 })
@@ -279,7 +598,8 @@ export class StoreForm implements OnInit {
   private readonly storesService = inject(StoresService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-private readonly cdr=inject(ChangeDetectorRef)
+  private readonly cdr = inject(ChangeDetectorRef);
+
   storeId: string | null = null;
   isEditing = false;
   loadingStore = false;
@@ -287,11 +607,21 @@ private readonly cdr=inject(ChangeDetectorRef)
   errorMessage = '';
 
   readonly storeForm = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+    name: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(100),
+      ],
+    ],
     description: ['', [Validators.maxLength(1000)]],
     logoUrl: ['', [Validators.pattern(/^$|^https?:\/\/.+/i)]],
     currency: ['EGP' as StoreCurrency, [Validators.required]],
-    timezone: ['Africa/Cairo', [Validators.required, Validators.maxLength(100)]],
+    timezone: [
+      'Africa/Cairo',
+      [Validators.required, Validators.maxLength(100)],
+    ],
     status: ['active' as StoreStatus, [Validators.required]],
   });
 
@@ -306,6 +636,9 @@ private readonly cdr=inject(ChangeDetectorRef)
 
   private loadStore(id: string): void {
     this.loadingStore = true;
+    this.errorMessage = '';
+    this.cdr.markForCheck();
+
     this.storesService.getStoreById(id).subscribe({
       next: ({ data }) => {
         const store = data.store;
@@ -317,19 +650,19 @@ private readonly cdr=inject(ChangeDetectorRef)
           currency: store.currency,
           timezone: store.timezone,
           status: store.status,
-
         });
 
         this.loadingStore = false;
-                    this.cdr.markForCheck();
-
+        this.cdr.markForCheck();
       },
       error: (error: HttpErrorResponse) => {
         this.errorMessage =
           error.error?.error?.message ??
           error.error?.message ??
-          'Could not load this store.';
+          'Could not load this store. Please try again.';
+
         this.loadingStore = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -339,6 +672,7 @@ private readonly cdr=inject(ChangeDetectorRef)
 
     if (this.storeForm.invalid || this.saving) {
       this.storeForm.markAllAsTouched();
+      this.cdr.markForCheck();
       return;
     }
 
@@ -352,6 +686,7 @@ private readonly cdr=inject(ChangeDetectorRef)
     };
 
     const logoUrl = value.logoUrl.trim();
+
     if (logoUrl) {
       input.logoUrl = logoUrl;
     } else if (this.isEditing) {
@@ -363,14 +698,18 @@ private readonly cdr=inject(ChangeDetectorRef)
     }
 
     this.saving = true;
+    this.cdr.markForCheck();
 
-    const request = this.storeId
-      ? this.storesService.updateStore(this.storeId, input)
-      : this.storesService.createStore(input);
+    const request =
+      this.storeId && this.isEditing
+        ? this.storesService.updateStore(this.storeId, input)
+        : this.storesService.createStore(input);
 
     request.subscribe({
       next: () => {
         this.saving = false;
+        this.cdr.markForCheck();
+
         void this.router.navigate(['/dashboard/stores']);
       },
       error: (error: HttpErrorResponse) => {
@@ -380,7 +719,9 @@ private readonly cdr=inject(ChangeDetectorRef)
           (error.status === 0
             ? 'Could not connect to the server. Make sure the backend is running.'
             : 'Could not save this store. Please check your information.');
+
         this.saving = false;
+        this.cdr.markForCheck();
       },
     });
   }

@@ -1,0 +1,193 @@
+
+<section class="details-page">
+  <a
+    class="back-link"
+    [routerLink]="['/dashboard/stores', storeId, 'orders']"
+  >
+    ← Back to orders
+  </a>
+
+  @if (loading) {
+    <div class="state-card">
+      <span class="loader"></span>
+      <p>Loading order details...</p>
+    </div>
+  } @else if (errorMessage && !order) {
+    <div class="alert alert-error">
+      <span>{{ errorMessage }}</span>
+      <button type="button" (click)="loadOrder()">Retry</button>
+    </div>
+  } @else if (order) {
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">ORDER MANAGEMENT</p>
+        <h1>{{ order.orderNumber }}</h1>
+        <p class="subtitle">
+          Created {{ order.createdAt | date:'dd MMM yyyy, hh:mm a' }}
+        </p>
+      </div>
+
+      <span
+        class="status-badge"
+        [class]="getStatusClass(order.status)"
+      >
+        {{ order.status | titlecase }}
+      </span>
+    </header>
+
+    @if (successMessage) {
+      <div class="alert alert-success">{{ successMessage }}</div>
+    }
+
+    @if (errorMessage) {
+      <div class="alert alert-error">{{ errorMessage }}</div>
+    }
+
+    <div class="details-grid">
+      <div class="main-column">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Order Items</h2>
+              <p>{{ order.items.length }} product(s)</p>
+            </div>
+          </div>
+
+          <div class="items-list">
+            @for (item of order.items; track item.product) {
+              <article class="item-row">
+                <div class="product-icon">P</div>
+
+                <div class="product-info">
+                  <strong>{{ item.name }}</strong>
+                  <span>SKU: {{ item.sku }}</span>
+                  <span>
+                    {{ item.unitPrice | number:'1.2-2' }}
+                    {{ order.currency }} × {{ item.quantity }}
+                  </span>
+                </div>
+
+                <strong class="line-total">
+                  {{ item.lineTotal | number:'1.2-2' }}
+                  {{ order.currency }}
+                </strong>
+              </article>
+            }
+          </div>
+
+          <div class="totals">
+            <div>
+              <span>Subtotal</span>
+              <strong>
+                {{ order.subtotal | number:'1.2-2' }} {{ order.currency }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Shipping fee</span>
+              <strong>
+                {{ order.shippingFee | number:'1.2-2' }} {{ order.currency }}
+              </strong>
+            </div>
+
+            <div class="grand-total">
+              <span>Total</span>
+              <strong>
+                {{ order.total | number:'1.2-2' }} {{ order.currency }}
+              </strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Order Status</h2>
+              <p>Update the order to its next allowed status.</p>
+            </div>
+          </div>
+
+          @if (nextStatuses.length) {
+            <div class="status-actions">
+              @for (status of nextStatuses; track status) {
+                <button
+                  type="button"
+                  [class.cancel-action]="status === 'cancelled'"
+                  [disabled]="saving"
+                  (click)="updateStatus(status)"
+                >
+                  @if (saving) {
+                    Updating...
+                  } @else {
+                    {{ status === 'cancelled' ? 'Cancel Order' : 'Mark as ' + (status | titlecase) }}
+                  }
+                </button>
+              }
+            </div>
+          } @else {
+            <p class="terminal-status">
+              This order has reached its final status.
+            </p>
+          }
+        </section>
+      </div>
+
+      <aside class="side-column">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Customer</h2>
+              <p>Customer contact information</p>
+            </div>
+          </div>
+
+          <div class="customer-info">
+            <div class="avatar">
+              {{ order.customer.name.charAt(0).toUpperCase() }}
+            </div>
+
+            <strong>{{ order.customer.name }}</strong>
+
+            <a [href]="'mailto:' + order.customer.email">
+              {{ order.customer.email }}
+            </a>
+
+            <a [href]="'tel:' + order.customer.phone">
+              {{ order.customer.phone }}
+            </a>
+          </div>
+
+          <div class="info-block">
+            <span>Shipping Address</span>
+            <p>{{ order.customer.address }}</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Additional Notes</h2>
+              <p>Notes attached to this order</p>
+            </div>
+          </div>
+
+          <p class="notes">
+            {{ order.notes || 'No additional notes.' }}
+          </p>
+        </section>
+
+        <section class="panel">
+          <div class="info-block">
+            <span>Order Number</span>
+            <strong>{{ order.orderNumber }}</strong>
+          </div>
+
+          <div class="info-block">
+            <span>Last Updated</span>
+            <strong>{{ order.updatedAt | date:'dd MMM yyyy, hh:mm a' }}</strong>
+          </div>
+        </section>
+      </aside>
+    </div>
+  }
+</section>

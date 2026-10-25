@@ -1,0 +1,404 @@
+
+<app-navbar
+  (requestLogin)="openAuth('login')"
+  (requestRegister)="openAuth('register')"
+/>
+
+<main class="home-page">
+    
+@if (authMode) {
+  <div
+    class="auth-modal-backdrop"
+    (click)="onModalBackdropClick($event)"
+    (keydown.escape)="closeAuth()"
+  >
+    <section
+      class="auth-modal"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="authMode === 'login' ? 'Sign in' : 'Create account'"
+    >
+      <button
+        type="button"
+        class="auth-modal-close"
+        aria-label="Close authentication window"
+        (click)="closeAuth()"
+      >
+        &times;
+      </button>
+
+      @if (authMode === 'login') {
+        <app-login
+          [modalMode]="true"
+          (authenticated)="onAuthenticated()"
+          (switchToRegister)="switchAuthMode('register')"
+        />
+      } @else {
+        <app-register
+          [modalMode]="true"
+          (authenticated)="onAuthenticated()"
+          (switchToLogin)="switchAuthMode('login')"
+        />
+      }
+    </section>
+  </div>
+}
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">
+        <span>✧</span>
+        COMMERCE, SIMPLIFIED
+      </div>
+
+      <h1>
+        Everything Your Store Needs.
+        <span>All in One Place.</span>
+      </h1>
+
+      <p class="hero-description">
+        Run products, orders, customers, and insights from one calm,
+        beautifully organized workspace built for modern sellers.
+      </p>
+
+      <div class="hero-actions">
+        <button
+  type="button"
+  class="primary-button"
+  (click)="openAuth('register')"
+>
+  Build your store free <span>→</span>
+</button>
+        <a href="#features" class="secondary-button">Explore features</a>
+      </div>
+
+      <div class="benefits">
+        <span>✓ No credit card</span>
+        <span>✓ Simple setup</span>
+        <span>✓ Cancel anytime</span>
+      </div>
+    </div>
+
+    <!-- DASHBOARD PREVIEW -->
+    <div class="dashboard-preview">
+      <aside class="preview-sidebar">
+        <div class="preview-logo">S</div>
+        <div class="preview-nav-item active">▦ Overview</div>
+        <div class="preview-nav-item">▤ Products</div>
+        <div class="preview-nav-item">▧ Orders</div>
+        <div class="preview-nav-item">♙ Customers</div>
+        <div class="preview-nav-item">▥ Analytics</div>
+
+        <div class="preview-sidebar-bottom">
+          <span class="preview-avatar">AM</span>
+          <div>
+            <strong>Amara</strong>
+            <small>Store owner</small>
+          </div>
+        </div>
+      </aside>
+
+      <div class="preview-main">
+        <div class="preview-topbar">
+          <div>
+            <small>Monday, 24 June</small>
+            <h2>Good morning, Amara</h2>
+            <p>Here's what's happening with your store today.</p>
+          </div>
+          <span class="preview-avatar">AM</span>
+        </div>
+
+        <div class="preview-stats">
+          <article class="preview-card">
+            <span>Total revenue</span>
+            <strong>$24,580</strong>
+            <small class="positive">↗ 12.8% this month</small>
+          </article>
+
+          <article class="preview-card">
+            <span>Total orders</span>
+            <strong>1,284</strong>
+            <small class="positive">↗ 8.2% this month</small>
+          </article>
+
+          <article class="preview-card">
+            <span>Products</span>
+            <strong>356</strong>
+            <small>Across your catalog</small>
+          </article>
+        </div>
+
+        <div class="preview-lower">
+          <article class="preview-panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Revenue overview</h3>
+                <p>Your store's performance</p>
+              </div>
+              <span class="period-chip">Last 7 days⌄</span>
+            </div>
+
+            <div class="chart">
+              <div class="chart-grid">
+                <span></span><span></span><span></span><span></span>
+              </div>
+
+              <svg viewBox="0 0 520 150" preserveAspectRatio="none"
+                role="img" aria-label="Illustrative revenue chart">
+                <defs>
+                  <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#a98465" stop-opacity=".28" />
+                    <stop offset="100%" stop-color="#a98465" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+
+                <path
+                  d="M0,120 C35,110 45,80 85,94 S140,115 175,72 S235,88 270,55 S330,76 365,38 S430,65 465,25 S495,32 520,12 L520,150 L0,150 Z"
+                  fill="url(#revenueFill)"
+                />
+                <path
+                  d="M0,120 C35,110 45,80 85,94 S140,115 175,72 S235,88 270,55 S330,76 365,38 S430,65 465,25 S495,32 520,12"
+                  fill="none"
+                  stroke="#8a6549"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+
+            <div class="chart-labels">
+              <span>Mon</span><span>Tue</span><span>Wed</span>
+              <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+          </article>
+
+          <article class="preview-panel orders-panel">
+            <h3>Recent orders</h3>
+            <p>Latest customer purchases</p>
+
+            <div class="order-row">
+              <span class="order-avatar">JD</span>
+              <div><strong>Jordan Davis</strong><small>#SP-1024</small></div>
+              <span class="order-status">Paid</span>
+            </div>
+
+            <div class="order-row">
+              <span class="order-avatar">AL</span>
+              <div><strong>Alex Lee</strong><small>#SP-1023</small></div>
+              <span class="order-status">Paid</span>
+            </div>
+
+            <div class="order-row">
+              <span class="order-avatar">MK</span>
+              <div><strong>Morgan Kim</strong><small>#SP-1022</small></div>
+              <span class="order-status pending">Pending</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <p class="preview-caption">A little preview of your future workspace</p>
+  </section>
+
+  <!-- CONNECTED FEATURES SHOWCASE -->
+  <section class="showcase-section">
+    <div class="showcase-heading">
+      <span class="eyebrow">EVERYTHING CONNECTED</span>
+
+      <div class="showcase-intro">
+        <h2>Less busywork. More growing.</h2>
+        <p>
+          Your entire operation, thoughtfully brought together.
+          No complicated setup, no scattered tools.
+        </p>
+      </div>
+    </div>
+
+    <div class="showcase-grid">
+      <article class="showcase-card products-showcase">
+        <div class="feature-icon">⬡</div>
+        <h3>Products, beautifully organized</h3>
+        <p>
+          Add products, track stock, and manage every variant
+          without losing your place.
+        </p>
+
+        <div class="product-list">
+          <div class="product-row">
+            <span class="product-swatch linen"></span>
+            <div class="product-info">
+              <strong>Handwoven linen throw</strong>
+              <small>24 in stock</small>
+            </div>
+            <strong>$89.00</strong>
+          </div>
+
+          <div class="product-row">
+            <span class="product-swatch stoneware"></span>
+            <div class="product-info">
+              <strong>Stoneware serving set</strong>
+              <small>8 in stock</small>
+            </div>
+            <strong>$124.00</strong>
+          </div>
+        </div>
+      </article>
+
+      <div class="showcase-stack">
+        <article class="showcase-card insights-showcase">
+          <div class="feature-icon">▥</div>
+          <h3>Insights you can act on</h3>
+          <p>See what is selling and where to focus next.</p>
+
+          <div class="mini-chart" aria-label="Illustrative analytics chart">
+            <span style="--bar: 42%"></span>
+            <span style="--bar: 60%"></span>
+            <span style="--bar: 49%"></span>
+            <span class="highlight-bar" style="--bar: 77%"></span>
+            <span style="--bar: 56%"></span>
+            <span style="--bar: 66%"></span>
+            <span style="--bar: 88%"></span>
+          </div>
+        </article>
+
+        <article class="showcase-card orders-showcase">
+          <div class="feature-icon">▤</div>
+          <h3>Orders, under control</h3>
+          <p>Track every order from purchase to doorstep.</p>
+
+          <div class="order-steps">
+            <div><span></span><small>Paid</small></div>
+            <div><span></span><small>Packed</small></div>
+            <div><span></span><small>Shipped</small></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="features-section">
+    <div class="section-heading">
+      <span class="eyebrow">ONE WORKSPACE, MORE POSSIBILITIES</span>
+      <h2>Everything works better <span>together.</span></h2>
+      <p>
+        Less time switching tools. More time growing the business
+        you've worked hard to build.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <article class="feature-card">
+        <div class="feature-icon">▤</div>
+        <h3>Product management</h3>
+        <p>
+          Organize your catalog, update product details, and keep
+          your inventory in view.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-icon">▧</div>
+        <h3>Order tracking</h3>
+        <p>
+          Keep orders organized and follow each order from placement
+          to delivery.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-icon">▥</div>
+        <h3>Business insights</h3>
+        <p>
+          Understand store performance with a clear overview of your
+          sales and activity.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" class="pricing-section">
+    <div class="section-heading">
+      <span class="eyebrow">SIMPLE, TRANSPARENT PRICING</span>
+      <h2>Start small. Grow when you're ready.</h2>
+      <p>
+        No hidden fees. No long contracts. Just the tools your store needs.
+      </p>
+    </div>
+
+    <div class="pricing-grid">
+      <article class="pricing-card">
+        <h3>Free</h3>
+        <p>Everything you need to get started.</p>
+
+        <div class="price">
+          <strong>$0</strong><span>/ month</span>
+        </div>
+
+        <a routerLink="/register" class="pricing-button secondary">
+          Start for free
+        </a>
+
+        <ul>
+          <li>Up to 20 products</li>
+          <li>Order management</li>
+          <li>Basic analytics</li>
+        </ul>
+      </article>
+
+      <article class="pricing-card popular">
+        <span class="popular-label">MOST POPULAR</span>
+        <h3>Pro</h3>
+        <p>For stores ready to grow faster.</p>
+
+        <div class="price">
+          <strong>$29</strong><span>/ month</span>
+        </div>
+
+        <a routerLink="/register" class="pricing-button primary">
+          Start 14-day trial
+        </a>
+
+        <ul>
+          <li>Unlimited products</li>
+          <li>Advanced analytics</li>
+          <li>Priority support</li>
+          <li>Custom domain</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="cta-section">
+    <span class="eyebrow">YOUR STORE, YOUR WAY</span>
+    <h2>Ready to simplify your business?</h2>
+    <p>
+      Bring your products, orders, and insights into one organized workspace.
+    </p>
+    <button
+  type="button"
+  class="primary-button"
+  (click)="openAuth('register')"
+>
+  Build your store free <span>→</span>
+</button>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="home-footer">
+    <a routerLink="/" class="footer-brand">StorePilot</a>
+    <span>Everything your store needs, all in one place.</span>
+
+    <div class="footer-links">
+      <button type="button" class="footer-auth-link" (click)="openAuth('login')">
+  Sign in
+</button>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+  </footer>
+</main>

@@ -14,13 +14,27 @@ import { ProductStoreSelect } from './features/products/pages/product-store-sele
 
 import { DashboardLayout } from './layout/dashboard-layout/dashboard-layout';
 import { authGuard } from './core/guards/auth.guard';
-
+import { OrderList } from './features/orders/pages/order-list/order-list';
+import { OrderDetails } from './features/orders/pages/order-details/order-details';
+import { Analytics } from './features/analytics/pages/analytics/analytics';
+import { Home } from './features/home/home';
+import { AdminDashboard } from './features/admin-dashboard/admin-dashboard';
 export const routes: Routes = [
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: 'login',
-  },
+     {
+  path: '',
+  component: Home,
+  title: 'StorePilot | Commerce, Simplified',
+},
+//   {
+//     path: '',
+//     pathMatch: 'full',
+//     redirectTo: 'login',
+//   },
+{
+  path: 'admin',
+  component: AdminDashboard
+},
+ 
   {
     path: 'login',
     component: Login,
@@ -76,6 +90,23 @@ export const routes: Routes = [
         component: ProductList,
         title: 'Store Products | StorePilot',
       },
+      {
+  path: 'stores/:storeId/orders',
+  component: OrderList,
+  title: 'Orders | StorePilot'
+},
+{
+  path: 'stores/:storeId/orders/:orderId',
+  component: OrderDetails,
+  title: 'Order Details | StorePilot'
+},
+
+
+{
+  path: 'analytics',
+  component: Analytics,
+  title: 'Analytics | StorePilot',
+},
     ],
   },
   {

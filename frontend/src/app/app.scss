@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+.success-snackbar {
+  --mdc-snackbar-container-color: #e8f5e9;
+  --mdc-snackbar-supporting-text-color: #2e7d32;
+  --mat-snack-bar-button-color: #2e7d32;
+}
+
+.error-snackbar {
+  --mdc-snackbar-container-color: #ffebee;
+  --mdc-snackbar-supporting-text-color: #c62828;
+  --mat-snack-bar-button-color: #c62828;
+}

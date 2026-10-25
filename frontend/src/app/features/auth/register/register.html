@@ -1,39 +1,79 @@
 
 <main class="auth-page">
   <section class="auth-card">
-    <a class="brand" routerLink="/login">
-      <span class="brand-icon">S</span>
-      <span>StorePilot</span>
+    <a class="brand" routerLink="/">
+      <!-- <span class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3.5 9h17l-1.5-5h-14L3.5 9Z"
+            stroke="currentColor" stroke-width="1.7"
+            stroke-linejoin="round"/>
+          <path d="M5 9v11h14V9M9 20v-6h6v6"
+            stroke="currentColor" stroke-width="1.7"
+            stroke-linejoin="round"/>
+          <path d="M3.5 9c0 2 3.5 2 3.5 0 0 2 3.5 2 3.5 0
+            0 2 3.5 2 3.5 0 0 2 3.5 2 3.5 0 0 2 3.5 2 3.5 0"
+            stroke="currentColor" stroke-width="1.5"
+            stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span>StorePilot</span> -->
     </a>
 
     <div class="auth-heading">
+      <span class="heading-icon">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="9" cy="8" r="4"
+            stroke="currentColor" stroke-width="1.6"/>
+          <path d="M2.5 20v-1.5A5.5 5.5 0 0 1 8 13h2
+            a5.5 5.5 0 0 1 5.5 5.5V20H2.5Z"
+            stroke="currentColor" stroke-width="1.6"
+            stroke-linejoin="round"/>
+          <path d="M18 8v6m-3-3h6"
+            stroke="currentColor" stroke-width="1.7"
+            stroke-linecap="round"/>
+        </svg>
+      </span>
+
       <p class="eyebrow">GET STARTED</p>
       <h1>Create your account</h1>
       <p class="subtitle">
-        Start managing your business from one organized workspace.
+        Set up your workspace and bring your business together.
       </p>
     </div>
 
     @if (errorMessage) {
       <div class="alert-error" role="alert">
-        {{ errorMessage }}
+        <span class="alert-icon" aria-hidden="true">!</span>
+        <span>{{ errorMessage }}</span>
       </div>
     }
 
     <form [formGroup]="registerForm" (ngSubmit)="submit()">
       <div class="form-field">
         <label for="name">Full name</label>
-        <input
-          id="name"
-          type="text"
-          formControlName="name"
-          placeholder="Your full name"
-          autocomplete="name"
-        />
+
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"
+              stroke="currentColor" stroke-width="1.6"/>
+            <path d="M4 21v-2a8 8 0 0 1 16 0v2"
+              stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round"/>
+          </svg>
+
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Your full name"
+            autocomplete="name"
+          />
+        </div>
 
         @if (registerForm.controls.name.touched &&
         registerForm.controls.name.invalid) {
           <small class="field-error">
+            <span aria-hidden="true">!</span>
             Name must contain at least 2 characters.
           </small>
         }
@@ -41,65 +81,189 @@
 
       <div class="form-field">
         <label for="email">Email address</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="you@example.com"
-          autocomplete="email"
-        />
+
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="3"
+              stroke="currentColor" stroke-width="1.6"/>
+            <path d="m4 7 8 6 8-6"
+              stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+          />
+        </div>
 
         @if (registerForm.controls.email.touched &&
         registerForm.controls.email.invalid) {
-          <small class="field-error">Enter a valid email address.</small>
+          <small class="field-error">
+            <span aria-hidden="true">!</span>
+            Enter a valid email address.
+          </small>
         }
       </div>
 
       <div class="form-field">
         <label for="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          placeholder="At least 8 characters"
-          autocomplete="new-password"
-        />
+
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="4" y="10" width="16" height="11" rx="2.5"
+              stroke="currentColor" stroke-width="1.6"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3"
+              stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round"/>
+            <circle cx="12" cy="15" r="1.2" fill="currentColor"/>
+            <path d="M12 16.2V18"
+              stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round"/>
+          </svg>
+
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="At least 8 characters"
+            autocomplete="new-password"
+          />
+        </div>
 
         @if (registerForm.controls.password.touched &&
         registerForm.controls.password.invalid) {
           <small class="field-error">
+            <span aria-hidden="true">!</span>
             Password must contain at least 8 characters.
           </small>
         }
       </div>
 
-      <button class="submit-button" type="submit" [disabled]="loading">
-        {{ loading ? 'Creating account...' : 'Create account' }}
+      <button
+        class="submit-button"
+        type="submit"
+        [disabled]="loading"
+      >
+        @if (loading) {
+          <span class="button-spinner" aria-hidden="true"></span>
+          <span>Creating account...</span>
+        } @else {
+          <span>Create your account</span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14m-6-6 6 6-6 6"
+              stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        }
       </button>
     </form>
 
+    <div class="secure-note">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="5" y="10" width="14" height="11" rx="2"
+          stroke="currentColor" stroke-width="1.5"/>
+        <path d="M8 10V7a4 4 0 0 1 8 0v3"
+          stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round"/>
+      </svg>
+      Your information is handled securely.
+    </div>
+
     <p class="auth-footer">
       Already have an account?
-      <a routerLink="/login">Sign in</a>
+      <button
+  type="button"
+  class="auth-switch-link"
+  (click)="modalMode() ? switchToLogin.emit() : null"
+>
+  Sign in
+</button>
     </p>
   </section>
 
   <aside class="auth-aside">
+    <div class="aside-decoration decoration-one"></div>
+    <div class="aside-decoration decoration-two"></div>
+
     <div class="aside-content">
-      <span class="aside-label">MEET YOUR NEW WORKSPACE</span>
-      <h2>Spend less time managing. More time growing.</h2>
+      <span class="aside-label">
+        <span class="label-dot"></span>
+        MEET YOUR NEW WORKSPACE
+      </span>
+
+      <h2>
+        Spend less time managing.
+        <span>More time growing.</span>
+      </h2>
+
       <p>
-        Bring your store operations together and keep your business
-        moving forward with StorePilot.
+        Bring your store operations together and build a clearer,
+        calmer way to manage your business every day.
       </p>
 
-      <div class="feature-line">
-        <span class="feature-check">✓</span>
-        Organized store management
+      <div class="aside-features">
+        <div class="feature-line">
+          <span class="feature-check">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m6 12 4 4 8-8"
+                stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>
+            <strong>Organized store management</strong>
+            <small>Keep your business operations in one place.</small>
+          </span>
+        </div>
+
+        <div class="feature-line">
+          <span class="feature-check">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m6 12 4 4 8-8"
+                stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>
+            <strong>Products and orders together</strong>
+            <small>Manage daily tasks with less friction.</small>
+          </span>
+        </div>
+
+        <div class="feature-line">
+          <span class="feature-check">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m6 12 4 4 8-8"
+                stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>
+            <strong>Room to grow</strong>
+            <small>Start with the essentials and expand over time.</small>
+          </span>
+        </div>
       </div>
-      <div class="feature-line">
-        <span class="feature-check">✓</span>
-        Products and orders in one place
+
+      <div class="aside-bottom">
+        <div class="mini-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 19V5m0 14h17"
+              stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round"/>
+            <path d="m7 15 4-4 3 2 6-7"
+              stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <strong>Everything connected.</strong>
+          <span>Your next chapter starts here.</span>
+        </div>
       </div>
     </div>
   </aside>

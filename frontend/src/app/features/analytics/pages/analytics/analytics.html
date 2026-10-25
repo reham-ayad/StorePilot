@@ -1,0 +1,235 @@
+
+<main class="analytics-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">BUSINESS INSIGHTS</p>
+      <h1>Analytics</h1>
+      <p class="subtitle">
+        Monitor your business performance and order activity.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="refresh-button"
+      [disabled]="loading"
+      (click)="loadAnalytics()"
+    >
+      <span class="refresh-icon">↻</span>
+      Refresh
+    </button>
+  </header>
+
+  @if (loading) {
+    <section class="message-card">
+      <div class="loader"></div>
+      <p>Loading your analytics...</p>
+    </section>
+  } @else if (errorMessage) {
+    <section class="message-card error-card">
+      <div class="message-icon">!</div>
+      <h2>Unable to load analytics</h2>
+      <p>{{ errorMessage }}</p>
+      <button type="button" (click)="loadAnalytics()">Try again</button>
+    </section>
+  } @else if (analytics; as data) {
+    <section class="period-banner">
+      <div>
+        <span class="period-label">REPORTING PERIOD</span>
+        <h2>{{ periodLabel }}</h2>
+        <p>Monthly activity across your stores</p>
+      </div>
+
+      <span class="period-icon">▦</span>
+    </section>
+
+    <section class="metrics-grid">
+      <article class="metric-card">
+        <div class="metric-top">
+          <span class="metric-label">Monthly Revenue</span>
+          <span class="metric-icon revenue-icon">$</span>
+        </div>
+
+        <p class="metric-value">
+          {{ data.summary.monthlyRevenue | number: '1.2-2' }}
+        </p>
+
+        <p class="metric-note">Revenue excluding cancelled orders</p>
+      </article>
+
+      <article class="metric-card">
+        <div class="metric-top">
+          <span class="metric-label">Total Orders</span>
+          <span class="metric-icon orders-icon">▤</span>
+        </div>
+
+        <p class="metric-value">
+          {{ data.summary.totalOrders | number }}
+        </p>
+
+        <p class="metric-note">All-time orders across your stores</p>
+      </article>
+
+      <article class="metric-card">
+        <div class="metric-top">
+          <span class="metric-label">Monthly Orders</span>
+          <span class="metric-icon monthly-icon">◷</span>
+        </div>
+
+        <p class="metric-value">
+          {{ data.summary.monthlyOrders | number }}
+        </p>
+
+        <p class="metric-note">Orders created this month</p>
+      </article>
+
+      <article class="metric-card">
+        <div class="metric-top">
+          <span class="metric-label">Total Products</span>
+          <span class="metric-icon products-icon">◇</span>
+        </div>
+
+        <p class="metric-value">
+          {{ data.summary.totalProducts | number }}
+        </p>
+
+        <p class="metric-note">Products excluding archived items</p>
+      </article>
+    </section>
+
+    <section class="secondary-metrics">
+      <article class="mini-card">
+        <div class="mini-icon stores-icon">▣</div>
+        <div>
+          <p>Active Stores</p>
+          <h3>{{ data.summary.totalStores | number }}</h3>
+        </div>
+      </article>
+
+      <article class="mini-card">
+        <div class="mini-icon pending-icon">◷</div>
+        <div>
+          <p>Pending Orders</p>
+          <h3>{{ data.ordersByStatus.pending | number }}</h3>
+        </div>
+      </article>
+
+      <article class="mini-card">
+        <div class="mini-icon delivered-icon">✓</div>
+        <div>
+          <p>Delivered Orders</p>
+          <h3>{{ data.ordersByStatus.delivered | number }}</h3>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel status-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Orders by Status</h2>
+            <p>Distribution of orders across all statuses.</p>
+          </div>
+
+          <span class="panel-tag">
+            {{ totalStatusOrders | number }} orders
+          </span>
+        </div>
+
+        @if (totalStatusOrders > 0) {
+          <div class="status-list">
+            @for (item of statusItems; track item.status) {
+              <div class="status-item">
+                <div class="status-item-header">
+                  <span class="status-name">
+                    <span
+                      class="status-dot"
+                      [class]="'status-dot status-' + item.status"
+                    ></span>
+                    {{ item.status | titlecase }}
+                  </span>
+
+                  <strong>{{ item.count | number }}</strong>
+                </div>
+
+                <div class="progress-track">
+                  <div
+                    class="progress-bar"
+                    [class]="'progress-bar status-' + item.status"
+                    [style.width.%]="getStatusPercentage(item.count)"
+                  ></div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-chart">
+            <div class="empty-chart-icon">▤</div>
+            <h3>No orders yet</h3>
+            <p>Order status analytics will appear when orders are created.</p>
+          </div>
+        }
+      </article>
+
+      <article class="panel subscription-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Subscription</h2>
+            <p>Your current plan information.</p>
+          </div>
+
+          <span
+            class="subscription-indicator"
+            [class.inactive]="!data.subscription"
+          >
+            {{ data.subscription ? 'Active' : 'No active plan' }}
+          </span>
+        </div>
+
+        @if (data.subscription; as subscription) {
+          <div class="plan-card">
+            <div class="plan-icon">✦</div>
+
+            <div>
+              <span class="plan-label">CURRENT PLAN</span>
+              <h3>{{ subscription.plan?.name || 'Current Plan' }}</h3>
+            </div>
+          </div>
+
+          <div class="subscription-details">
+            <div class="detail-row">
+              <span>Status</span>
+              <strong>{{ subscription.status | titlecase }}</strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Billing cycle</span>
+              <strong>{{ subscription.billingCycle | titlecase }}</strong>
+            </div>
+
+            <div class="detail-row">
+              <span>Start date</span>
+              <strong>{{ subscription.startDate | date: 'mediumDate' }}</strong>
+            </div>
+
+            <div class="detail-row">
+              <span>End date</span>
+              <strong>{{ subscription.endDate | date: 'mediumDate' }}</strong>
+            </div>
+          </div>
+        } @else {
+          <div class="empty-subscription">
+            <div class="empty-chart-icon">✦</div>
+            <h3>No active subscription</h3>
+            <p>You don't have an active subscription at the moment.</p>
+          </div>
+        }
+      </article>
+    </section>
+
+    <footer class="report-footer">
+      <span>StorePilot Analytics</span>
+      <span>Reporting period: {{ data.period.from | date: 'mediumDate' }} – {{ data.period.to | date: 'mediumDate' }}</span>
+    </footer>
+  }
+</main>

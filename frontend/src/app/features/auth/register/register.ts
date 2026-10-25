@@ -8,7 +8,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../../app/core/services/auth.service';
-
+import { output,input } from '@angular/core';
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -23,6 +23,9 @@ export class Register {
 
   loading = false;
   errorMessage = '';
+  modalMode = input(false);
+authenticated = output<void>();
+switchToLogin = output<void>();
 
   registerForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -41,10 +44,15 @@ export class Register {
     this.loading = true;
 
     this.authService.register(this.registerForm.getRawValue()).subscribe({
-      next: () => {
-        this.loading = false;
-        void this.router.navigate(['/dashboard']);
-      },
+ next: () => {
+  this.loading = false;
+
+  if (this.modalMode()) {
+    this.authenticated.emit();
+  } else {
+    void this.router.navigate(['/dashboard']);
+  }
+},
       error: (error: HttpErrorResponse) => {
         this.loading = false;
         this.errorMessage =

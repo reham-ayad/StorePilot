@@ -1,0 +1,305 @@
+
+<div class="admin-page">
+  <header class="page-header">
+    <div class="header-copy">
+      <div class="eyebrow">
+        <i class="fa-solid fa-shield-halved"></i>
+        PLATFORM MANAGEMENT
+      </div>
+
+      <h1>Super Admin Dashboard</h1>
+
+      <p>
+        Monitor your platform, stores, orders, revenue, and subscriptions
+        from one place.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="refresh-button"
+      (click)="loadDashboard()"
+      [disabled]="loading"
+    >
+      <i class="fa-solid fa-rotate-right" [class.spinning]="loading"></i>
+      Refresh Data
+    </button>
+  </header>
+
+  @if (loading) {
+    <section class="state-card">
+      <span class="spinner"></span>
+      <h2>Loading dashboard...</h2>
+      <p>Fetching the latest platform statistics.</p>
+    </section>
+  } @else if (errorMessage) {
+    <section class="state-card error-state">
+      <div class="state-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+
+      <h2>Dashboard unavailable</h2>
+      <p>{{ errorMessage }}</p>
+
+      <button type="button" class="primary-button" (click)="loadDashboard()">
+        Try Again
+      </button>
+    </section>
+  } @else if (dashboard; as data) {
+    <section class="welcome-row">
+      <div>
+        <h2>Platform Overview</h2>
+        <p>Your platform's current performance at a glance.</p>
+      </div>
+
+      <span class="period-badge">
+        <i class="fa-regular fa-calendar"></i>
+        {{ currentMonthLabel }}
+      </span>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Total Users</span>
+          <span class="stat-icon brown">
+            <i class="fa-solid fa-users"></i>
+          </span>
+        </div>
+        <h3>{{ data.summary.totalUsers | number }}</h3>
+        <p>Registered platform users</p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Store Owners</span>
+          <span class="stat-icon sand">
+            <i class="fa-solid fa-user-tie"></i>
+          </span>
+        </div>
+        <h3>{{ data.summary.totalOwners | number }}</h3>
+        <p>Accounts with owner access</p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Total Stores</span>
+          <span class="stat-icon olive">
+            <i class="fa-solid fa-store"></i>
+          </span>
+        </div>
+        <h3>{{ data.summary.totalStores | number }}</h3>
+        <p>
+          {{ data.summary.activeStores | number }} active stores
+        </p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Total Products</span>
+          <span class="stat-icon clay">
+            <i class="fa-solid fa-boxes-stacked"></i>
+          </span>
+        </div>
+        <h3>{{ data.summary.totalProducts | number }}</h3>
+        <p>Products across the platform</p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Total Orders</span>
+          <span class="stat-icon brown">
+            <i class="fa-solid fa-receipt"></i>
+          </span>
+        </div>
+        <h3>{{ data.summary.totalOrders | number }}</h3>
+        <p>{{ data.summary.monthlyOrders | number }} this month</p>
+      </article>
+
+      <article class="stat-card revenue-card">
+        <div class="stat-top">
+          <span class="stat-label">Monthly Revenue</span>
+          <span class="stat-icon olive">
+            <i class="fa-solid fa-wallet"></i>
+          </span>
+        </div>
+        <h3>
+          {{ data.summary.monthlyRevenue | currency:'EGP':'symbol':'1.0-2' }}
+        </h3>
+        <p>Non-cancelled orders created this month</p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Active Subscriptions</span>
+          <span class="stat-icon olive">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </span>
+        </div>
+        <h3>{{ data.summary.activeSubscriptions | number }}</h3>
+        <p>Currently active subscriptions</p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Expired Subscriptions</span>
+          <span class="stat-icon clay">
+            <i class="fa-solid fa-clock"></i>
+          </span>
+        </div>
+        <h3>{{ data.summary.expiredSubscriptions | number }}</h3>
+        <p>Expired or past their end date</p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Active Plans</span>
+          <span class="stat-icon sand">
+            <i class="fa-solid fa-gem"></i>
+          </span>
+        </div>
+        <h3>{{ data.summary.activePlans | number }}</h3>
+        <p>Plans available on the platform</p>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel orders-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Orders Overview</h2>
+            <p>Distribution by order status</p>
+          </div>
+
+          <span class="total-orders-badge">
+            {{ totalStatusOrders | number }} orders
+          </span>
+        </div>
+
+        <div class="orders-total">
+          <span>Total orders</span>
+          <strong>{{ totalStatusOrders | number }}</strong>
+        </div>
+
+        <div class="status-list">
+          @for (status of statusOrder; track status) {
+            <div class="status-item">
+              <div class="status-heading">
+                <div class="status-name">
+                  <span class="status-dot" [ngClass]="'dot-' + status"></span>
+                  <span>{{ statusLabels[status] }}</span>
+                </div>
+
+                <div class="status-value">
+                  <strong>{{ getStatusCount(status) | number }}</strong>
+                  <span>{{ getStatusPercentage(status) }}%</span>
+                </div>
+              </div>
+
+              <div class="progress-track">
+                <div
+                  class="progress-fill"
+                  [ngClass]="'fill-' + status"
+                  [style.width.%]="getStatusPercentage(status)"
+                ></div>
+              </div>
+            </div>
+          }
+        </div>
+      </article>
+
+      <article class="panel platform-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Platform Accounts</h2>
+            <p>Account distribution</p>
+          </div>
+
+          <span class="panel-header-icon">
+            <i class="fa-solid fa-chart-pie"></i>
+          </span>
+        </div>
+
+        <div class="account-row">
+          <div class="account-icon">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="account-copy">
+            <strong>Total Users</strong>
+            <span>All registered accounts</span>
+          </div>
+          <strong class="account-number">
+            {{ data.summary.totalUsers | number }}
+          </strong>
+        </div>
+
+        <div class="account-row">
+          <div class="account-icon">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <div class="account-copy">
+            <strong>Store Owners</strong>
+            <span>Users with owner role</span>
+          </div>
+          <strong class="account-number">
+            {{ data.summary.totalOwners | number }}
+          </strong>
+        </div>
+
+        <div class="account-row">
+          <div class="account-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div class="account-copy">
+            <strong>Super Admins</strong>
+            <span>Platform administrators</span>
+          </div>
+          <strong class="account-number">
+            {{ data.summary.totalSuperAdmins | number }}
+          </strong>
+        </div>
+
+        <div class="account-row">
+          <div class="account-icon">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <div class="account-copy">
+            <strong>Active Stores</strong>
+            <span>Non-archived stores</span>
+          </div>
+          <strong class="account-number">
+            {{ data.summary.activeStores | number }}
+          </strong>
+        </div>
+
+        <div class="account-row">
+          <div class="account-icon">
+            <i class="fa-solid fa-gem"></i>
+          </div>
+          <div class="account-copy">
+            <strong>Active Plans</strong>
+            <span>Available subscription plans</span>
+          </div>
+          <strong class="account-number">
+            {{ data.summary.activePlans | number }}
+          </strong>
+        </div>
+
+        <div class="admin-note">
+          <i class="fa-solid fa-circle-info"></i>
+          <p>
+            These statistics summarize the entire platform, not a single store.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <footer class="dashboard-footer">
+      <span>
+        <i class="fa-solid fa-shield-halved"></i>
+        StorePilot Platform Administration
+      </span>
+      <span>Updated {{ currentMonthLabel }}</span>
+    </footer>
+  }
+</div>

@@ -10,6 +10,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../../app/core/services/auth.service';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { output,input } from '@angular/core';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -29,7 +31,9 @@ private snackBar= inject(MatSnackBar)
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
   });
-
+modalMode = input(false);
+authenticated = output<void>();
+switchToRegister = output<void>();
   submit(): void {
     this.errorMessage = '';
 
@@ -41,16 +45,22 @@ private snackBar= inject(MatSnackBar)
     this.loading = true;
 
     this.authService.login(this.loginForm.getRawValue()).subscribe({
-      next: () => {
-        this.loading = false;
-        void this.router.navigate(['/dashboard']);
-          this.snackBar.open('Login Successful! ', 'Close', {
+   next: () => {
+  this.loading = false;
+
+  if (this.modalMode()) {
+    this.authenticated.emit();
+  } else {
+    void this.router.navigate(['/dashboard']);
+  }
+
+  this.snackBar.open('Login Successful!', 'Close', {
     duration: 3000,
     panelClass: ['success-snackbar'],
     horizontalPosition: 'end',
-    verticalPosition: 'top'
+    verticalPosition: 'top',
   });
-      },
+},
       error: (error: HttpErrorResponse) => {
         this.loading = false;
         this.errorMessage =
