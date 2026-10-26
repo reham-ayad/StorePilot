@@ -6,6 +6,7 @@ import {
   AdminDashboardData,
   AnalyticsService
 } from '../../core/services/analytics.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -16,6 +17,7 @@ import {
 })
 export class AdminDashboard implements OnInit {
   private readonly analyticsService = inject(AnalyticsService);
+private cdr=inject( ChangeDetectorRef);
 
   dashboard: AdminDashboardData | null = null;
   loading = true;
@@ -51,6 +53,8 @@ export class AdminDashboard implements OnInit {
       next: (response) => {
         this.dashboard = response.data;
         this.loading = false;
+                    this.cdr.markForCheck();
+
       },
       error: (error) => {
         this.loading = false;

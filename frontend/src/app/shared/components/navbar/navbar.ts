@@ -65,16 +65,23 @@ requestRegister = output<void>();
       });
   }
 
-  openSuperAdmin(): void {
-    this.menuOpen = false;
+  
+openSuperAdmin(): void {
+  console.log('Super Admin button clicked');
+  console.log('Current user:', this.user);
 
-    if (this.user?.role === 'super_admin') {
-      this.router.navigate(['/admin']);
-      return;
-    }
+  this.menuOpen = false;
 
-    this.router.navigate(['/']);
+  if (this.user?.role === 'super_admin') {
+    this.router.navigate(['/admin']).then((success) => {
+      console.log('Navigation success:', success);
+    });
+  } else {
+    console.log('User role:', this.user?.role);
+    console.log('User is not recognized as super_admin');
   }
+}
+
 
   openStoreDashboard(): void {
     this.menuOpen = false;
@@ -96,4 +103,6 @@ requestRegister = output<void>();
     this.menuOpen = !this.menuOpen;
     this.cdr.markForCheck();
   }
+  
+
 }
