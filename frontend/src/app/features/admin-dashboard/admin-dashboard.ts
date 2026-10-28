@@ -7,11 +7,12 @@ import {
   AnalyticsService
 } from '../../core/services/analytics.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { Navbar } from '../../shared/components/navbar/navbar';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, DatePipe, RouterLink],
+  imports: [CommonModule, CurrencyPipe, DatePipe, RouterLink,Navbar],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.scss'
 })

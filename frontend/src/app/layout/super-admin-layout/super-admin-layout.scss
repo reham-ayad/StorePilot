@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.admin-layout {
+  min-height: 100vh;
+  background: #f8f5ef;
+}
+
+.admin-content {
+  min-height: 100vh;
+  margin-left: 250px;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 760px) {
+  .admin-content {
+    margin-left: 0;
+    padding: 88px 16px 20px;
+  }
+}

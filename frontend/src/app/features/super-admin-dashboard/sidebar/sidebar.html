@@ -1,0 +1,59 @@
+
+<aside class="sidebar">
+  <a routerLink="/admin" class="brand">
+    <span class="brand-icon">S</span>
+    <span>StorePilot</span>
+  </a>
+
+  <div class="sidebar-label">PLATFORM MANAGEMENT</div>
+
+  <nav class="sidebar-nav">
+    <a
+      routerLink="/admin"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-link"
+    >
+      <span class="nav-icon">◫</span>
+      <span>Overview</span>
+    </a>
+
+    <a routerLink="/admin/users" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">♙</span>
+      <span>Users</span>
+    </a>
+
+    <a routerLink="/admin/stores" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">▦</span>
+      <span>Stores</span>
+    </a>
+
+    <a routerLink="/admin/products" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">◇</span>
+      <span>Products</span>
+    </a>
+
+    <a routerLink="/admin/orders" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">☷</span>
+      <span>Orders</span>
+    </a>
+
+    <a routerLink="/admin/subscriptions" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">♧</span>
+      <span>Subscriptions</span>
+    </a>
+
+    <a routerLink="/admin/analytics" routerLinkActive="active" class="nav-link">
+      <span class="nav-icon">↗</span>
+      <span>Analytics</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="admin-avatar">SA</div>
+    <div class="admin-info">
+      <strong>Super Admin</strong>
+      <span>Platform Administrator</span>
+    </div>
+  </div>
+</aside>
