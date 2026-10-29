@@ -67,21 +67,20 @@ requestRegister = output<void>();
 
   
 openSuperAdmin(): void {
-  console.log('Super Admin button clicked');
-  console.log('Current user:', this.user);
-
   this.menuOpen = false;
 
   if (this.user?.role === 'super_admin') {
-    this.router.navigate(['/admin']).then((success) => {
-      console.log('Navigation success:', success);
-    });
-  } else {
-    console.log('User role:', this.user?.role);
-    console.log('User is not recognized as super_admin');
+    this.router.navigate(['/admin']);
+    return;
   }
-}
 
+  if (this.user?.role === 'owner') {
+    this.router.navigate(['/dashboard']);
+    return;
+  }
+
+  this.router.navigate(['/login']);
+}
 
   openStoreDashboard(): void {
     this.menuOpen = false;

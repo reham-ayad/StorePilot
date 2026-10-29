@@ -1,13 +1,13 @@
 
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink,Router } from '@angular/router';
 import {
   AdminDashboardData,
   AnalyticsService
-} from '../../core/services/analytics.service';
+} from '../../../core/services/analytics.service';
 import { ChangeDetectorRef } from '@angular/core';
-import { Navbar } from '../../shared/components/navbar/navbar';
+import { Navbar } from '../../../shared/components/navbar/navbar';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -19,7 +19,7 @@ import { Navbar } from '../../shared/components/navbar/navbar';
 export class AdminDashboard implements OnInit {
   private readonly analyticsService = inject(AnalyticsService);
 private cdr=inject( ChangeDetectorRef);
-
+private router=inject(Router)
   dashboard: AdminDashboardData | null = null;
   loading = true;
   errorMessage = '';
@@ -102,4 +102,7 @@ private cdr=inject( ChangeDetectorRef);
       year: 'numeric'
     }).format(new Date());
   }
+  goHome(): void {
+  void this.router.navigate(['/']);
+}
 }

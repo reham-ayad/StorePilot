@@ -20,7 +20,7 @@ import { Analytics } from './features/analytics/pages/analytics/analytics';
 import { DashboardLayout } from './layout/dashboard-layout/dashboard-layout';
 import { authGuard } from './core/guards/auth.guard';
 import { superAdminGuard } from './core/guards/super-admin.guard';
-import { AdminDashboard } from './features/admin-dashboard/admin-dashboard';
+import { AdminDashboard } from './features/super-admin-dashboard/admin-dashboard/admin-dashboard';
 import { SuperAdminLayout } from './features/../layout/super-admin-layout/super-admin-layout';
 
 export const routes: Routes = [

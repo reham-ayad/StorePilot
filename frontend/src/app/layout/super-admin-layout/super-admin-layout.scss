@@ -1,23 +1,42 @@
+
 :host {
   display: block;
   min-height: 100vh;
 }
 
 .admin-layout {
+  display: flex;
+  flex-direction: row;
   min-height: 100vh;
   background: #f8f5ef;
 }
 
-.admin-content {
+app-super-admin-sidebar {
+  display: block;
+  flex: 0 0 260px;
+  width: 260px;
   min-height: 100vh;
-  margin-left: 250px;
-  padding: 30px;
-  box-sizing: border-box;
 }
 
-@media (max-width: 760px) {
+.admin-content {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  app-super-admin-sidebar {
+    width: 100%;
+    min-height: auto;
+    flex: none;
+  }
+
   .admin-content {
-    margin-left: 0;
-    padding: 88px 16px 20px;
+    padding: 20px 16px;
   }
 }

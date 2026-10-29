@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Sidebar } from '../sidebar/sidebar';
+import { superAdminSidebar } from '../../features/super-admin-dashboard/sidebar/sidebar';
 
 @Component({
   selector: 'app-super-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, Sidebar],
+  imports: [RouterOutlet,superAdminSidebar ],
   templateUrl: './super-admin-layout.html',
   styleUrl: './super-admin-layout.scss',
 })

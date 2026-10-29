@@ -637,3 +637,41 @@
     flex-direction: column;
   }
 }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.home-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 1px solid #e9dfd3;
+  border-radius: 12px;
+  background: #fffdfa;
+  color: #70513b;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.home-button:hover {
+  background: #f0e6d6;
+  border-color: #70513b;
+}
+
+@media (max-width: 600px) {
+  .header-actions {
+    width: 100%;
+  }
+
+  .header-actions button {
+    flex: 1;
+  }
+}

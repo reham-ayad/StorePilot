@@ -97,9 +97,17 @@
 }
 
 .sign-in {
-  color: #70513b;
+ background: #70513b;
+  color: white;
+   border-radius: 14px;
   text-decoration: none;
   font-weight: 600;
+//    box-shadow: 0 8px 18px rgb(64 43 30 / 12%);
+//   transition: background 0.2s, transform 0.2s;
+   display: inline-flex;
+  align-items: center;
+  gap: 14px;
+   padding:10px  14px;
 }
 
 .start-button {
